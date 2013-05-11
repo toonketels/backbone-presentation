@@ -4,14 +4,14 @@ BACKBONE PRESENTATION
 Introducing backbone.js, no more JavaScript spaghetti code
 ----------------------------------------------------------
 
-## Meta 5
+## Meta
 
 *  Introduction
 *  About me
 *  Overview
 *  Why this presentation?
 
-## What is Backbone 5
+## What is Backbone
 
 Goal:
 *  Get a feel for backbone
@@ -48,9 +48,9 @@ Goal:
 *  Use the objects right away or extend them
 
 
-## Components deep dive 25
+## Components deep dive
 
-### What are views? 5
+### What are views?
 
 *  What is it
 *  What problem does it solves
@@ -59,7 +59,7 @@ Goal:
 *  How does this prevent spaghetti code?
 *  Code
 
-### Model 5
+### Model
 
 
 #### What
@@ -343,13 +343,13 @@ And it offers an object to represent your server side data on the client.
 * We don't need to write code to update the resources on the server anymore.
 
 
-### What are collections? 5
-### What is the router? 5
-### Syncing with the backend 5
+### What are collections?
+### What is the router?
+### Syncing with the backend
 
-## All together now? 5
+## All together now
 
-## After thoughts 5
+## After thoughts
 
 *  Using backbone: using specific components to augment backend heavy 
    applications vs full javascript client side apps.
