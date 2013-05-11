@@ -343,8 +343,194 @@ And it offers an object to represent your server side data on the client.
 * We don't need to write code to update the resources on the server anymore.
 
 
-### What are collections?
+### Collections
+
+#### What
+
+> Collections are ordered sets of models.
+
+In MVC there is no notion of "Collections". Backbone added collections
+because... they make sense (in a web context).
+
+We often work on sets of items. We now have an entity to make this easier.
+
+
+#### Example collections
+
+Representing a concrete resource:
+
+* Users
+* Latest articles
+* Articles promoted to frontpage
+* All pages
+* All nodes
+
+Abstract collections
+
+* Controls on a slideshow
+* Main menu links
+* Pager in search results
+
+
+#### How to create a collection
+
+Just as with models, best is to subclass `Backbone.Collection` but it's
+not required.
+
+    var Coworkers = Backbone.Collection.extend({
+  
+      model: Person,
+
+      comparator: 'uid'
+  
+    });
+
+Above, the `model` attribute specifies which type of model it contains.
+
+This allows us to pass a json string and the models will be created
+automatically.
+
+    var source = [
+      {
+        name: "Toon Ketels",
+        age: 30,
+        profession: "developer",
+        bio: "<p>Scrum master, backend Drupal developer.</p>",
+        uid: 7544,
+        id: 'tk-7544-corl'
+      },
+      {
+        name: "An Katrien",
+        age: 23,
+        country: "the Netherlands",
+        bio: "<p>Works in Germany. Loves to gamble.</p>",
+        uid: 3400,
+        id: 'ak-3400-corl'
+      },
+      {
+        name: "Jan Bollen",
+        age: 30,
+        country: "the Netherlands",
+        profession: "product owner",
+        bio: "<p>Loves working with team.</p>",
+        uid: 410,
+        id: 'jb-410-corl'
+      }
+    ];
+  
+    var coworkers = new Coworkers(source);
+
+This will create an object like this:
+
+    {
+      _byId: Object,
+      length: 3,
+      models: Array[3]
+    }
+
+`model` attribure can also be a function to dynamically determine the
+type based on some properties.
+
+
+#### Retrieving models
+
+The are many ways to get models from a collection.
+
+By model's index in this collection:
+
+    coworkers.at(1);
+
+By the model's ID:
+
+    coworkers.get(410)
+  
+Based on some attributes (will return an array):
+
+    coworkers.where({country: "the Netherlands"});
+
+And many more, see [backbone documentationn](http://backbonejs.org/#Collection).
+
+
+#### Adding & removing
+
+It's also easy to add and remove items from the collection.
+
+Add a new coworker:
+
+    var noob = new Person({
+        name: "Dries Gaastra",
+        age: 19,
+        country: "the Netherlands",
+        profession: "themer",
+        bio: "<p>Plays with css and javascript all day long.</p>",
+        uid: 9016,
+        id: 'dg-9016-corl'
+    });
+    coworkers.add(noob);
+
+Remove the second coworker:
+
+    var someone = coworkers.at(1);
+    coworkers.remove(someone);
+
+
+#### Sorting
+
+Collections are sorted on the `comparator` attribute.
+
+We can change it and sort the collection again.
+
+    coworkers.comparator = 'name';
+    coworkers.sort();
+
+    coworkers.comparator = 'country';
+    coworkers.sort();
+
+
+#### Event aggregation
+
+Just like models, collections emit events (add, remove, sort). What's
+really nice is that collections aggregate the events of their models.
+
+Below we listen for `change:age` event on the models of the collection.
+
+    coworkers.on('change:age', function(model, value) {
+      // ...
+    });
+  
+To get an idea of all the evens emitted do:
+
+    coworkers.on('all', function() {
+      console.log('event emitted');
+      console.log(arguments);
+    });
+  
+And see it in action:
+
+    noob.set('age', 45);
+
+
+#### What problem does it solve
+
+Collections are concerned about managing group of models and keeping
+them in order.
+
+They are an endpoint to get to individual models.
+
+
+#### How does this prevent spaghetti code
+
+* Help organize sets of models into groups
+* Provide convenience functions to manage those groups
+* Emit events and aggregate events of models. We no longer need pointers
+  to all the models.
+
+
 ### What is the router?
+
+
+
+
 ### Syncing with the backend
 
 ## All together now
