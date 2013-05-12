@@ -50,17 +50,8 @@ Goal:
 
 ## Components deep dive
 
-### What are views?
-
-*  What is it
-*  What problem does it solves
-*  Use cases standalone
-*  Benefits
-*  How does this prevent spaghetti code?
-*  Code
 
 ### Model
-
 
 #### What
 
@@ -524,6 +515,421 @@ They are an endpoint to get to individual models.
 * Provide convenience functions to manage those groups
 * Emit events and aggregate events of models. We no longer need pointers
   to all the models.
+
+
+### Views
+
+#### What
+
+Views are objects which do two things. 1) Displaying data (most of the
+time models) and 2) capturing user interaction to trigger code.
+
+They can use templates to actually display html.
+
+
+#### Example views
+
+* List of blogposts
+* A blogpost
+* A button to paginate
+
+
+#### Create view
+
+The simples way to create a view is to pass the `el` to it.
+
+    var view = new Backbone.View({el: $('#main') });
+
+Here we created a standard Backbone view. Each view has an `el` attribute
+which refers to the root DOM object created in the browser.
+
+
+#### Subclass it
+
+Like most of the things, we better subclass the standard Backbone view.
+
+Furthermore, we don't want to pass an existing element but let Backbone
+create a DOM element for us.
+
+    var PersonView = Backbone.View.extend({
+      className: 'person-view',
+
+      render: function() {
+        this.$el.html( '<h2>Toon Ketels</h2>' );
+
+        return this;
+      }
+    });
+
+    var view = new PersonView();
+
+Backbone will now create a div with the class 'person-view'.
+
+We've also added the render method which will display a name in a h2.
+
+However, it's not in the DOM yet.
+
+
+#### Adding view to the DOM
+
+The code (object) creating the view should attach it to the dom.
+
+    var view = new PersonView();
+    var $container = $('#main');
+
+    $main.append( view.render().el );
+
+What happened here?
+
+`$main.append()` means we're appending something into the `#container`
+element.
+
+`view.render()` will add the `<h2>Toon Ketels</h2>` string to the views
+element.
+
+`view.render().el` returns root DOM element of the view, so it can be
+appended.
+
+The view is displayed in the DOM.
+
+
+#### Displaying model data
+
+The previous view always displayed the same `<h2>Toon Ketels</h2>`, which
+is not very useful.
+
+Pass in a model and render the contents of the model.
+
+    var Personview = Backbone.View.extend({
+     'className': 'person-view',
+  
+      render: function() {
+        var title = '<h2>'+this.model.get('name')+'</h2>';
+        this.$el.html(title);
+  
+        return this;
+      }
+
+    });
+
+    var toon = new Person({
+      name: "Toon Ketels",
+      age: 30,
+      profession: "developer",
+      bio: "<p>Scrum master, backend Drupal developer.</p>",
+      uid: 7544,
+      id: 'tk-7544-corl'
+    });
+
+    var view = new PersonView({model: toon});
+
+Now the view will display the name.
+
+
+#### Rerender on change
+
+The above works but we run into a problem when some other code changes
+the model's attributes.
+
+When toon model's name will be set to "David", the view still displays
+"Toon Ketels". We want the view to always display the correct data.
+
+    var Personview = Backbone.View.extend({
+      'className': 'person-view',
+
+      initialize: function() {
+         this.model.on('change', this.render);
+      },
+  
+      render: function() {
+        var content = '<h2>'+this.model.get('name')+'</h2>';
+        this.$el.html(content);
+  
+        return this;
+      }
+
+    });
+
+We do so by binding the model's change event to the view's render method.
+This is a very common pattern in Backbone.
+
+
+#### Using templates
+
+This is pretty cool but it's kind of ugly to have HTML strings into our
+model. This is especially true if we wanted to also display the bio,
+profession, and so... We would have a lot of HTML strings which would be
+kind of a mess.
+
+Better would be to separate the HTML out of the view object.
+
+We do so with templates. Underscore comes with a simple templating system
+but we can use any JavaScript templating library.
+
+Using templates is a three step process.
+
+1. Create HTML template string somewhere
+2. Grab the HTML string and pass it to the template function
+3. Compile template with variables into HTML
+
+In our HTML we add the following:
+
+    <script type="text/template" id="person-view">
+      <h2><%= name %></h2>
+      <p><span class="profession"><%= profession %></span> | <span class="country"><%= country %></span></p>
+      <div  class="controls"> <span class='more'>More</span><span class='less hide'>Less</span></div>
+      <div class="bio hide"><%= bio %></div>
+    </script>
+
+The view will change into:
+
+    var Personview = Backbone.View.extend({
+      'className': 'person-view',
+
+      initialize: function() {
+        this.model.on('change', this.render);
+      },
+
+      template: _.template( $('#person-view').html() ),
+  
+      render: function() {
+        var content = this.template( this.model.toJSON() );
+        this.$el.html(content);
+  
+        return this;
+      }
+
+    });
+
+What happens?
+
+    template: _.template( $('#person-view').html() )
+
+We added a property `template`. This will search the DOM for `#person-view`
+and grab it's content. This is the template we defined.
+
+The result is passed to our templating function `_.template()` which returns
+a function that, once execute swaps the placeholders with the real values.
+
+    var content = this.template( this.model.toJSON() );
+
+Here we actually passed the JSON object of our models attributes to the
+template function.
+
+    this.$el.html(content);
+
+The result is set as content of our element. Our entire view looks like this:
+
+    <div class="person-view">
+      <h2>Toon Ketels</h2>
+      <p><span class="profession">developer</span> | <span class="country">Belgium</span></p>
+      <div  class="controls"> <span class='more'>More</span><span class='less hide'>Less</span></div>
+      <div class="bio hide"><p>Scrum master, backend Drupal developer.</p></div>
+    </div>
+
+
+#### Catching use interaction
+
+Okay, that was part one of the view's purpose, displaying content. The
+other reason views exist is to catch user intent and execute code.
+
+Backbone views have an `events` property to map functions to user interaction.
+
+    var PersonView = Backbone.View.extend({
+  
+      'className': 'person-view',
+  
+      initialize: function() {
+        this.model.on('change', this.render);
+      },
+  
+      template: _.template( $('#person-view').html() ),
+  
+      render: function() {
+        var content = this.template(this.model.toJSON());
+        this.$el.html(content);
+  
+        return this;
+      },
+  
+      events: {
+        'click .more':        'showMore',
+        'click .less':        'showLess',
+        'click h2':           'goToDetail',
+        'mouseover':          'startHighlight',
+        'mouseout':           'stopHighlight'
+      },
+  
+      showMore: function(event) {
+  
+        this.$('.bio').slideDown('medium');
+        this.$('.controls span').toggleClass('hide');
+      },
+  
+      showLess: function(event) {
+  
+        this.$('.bio').slideUp('medium');
+        this.$('.controls span').toggleClass('hide');
+      },
+  
+      goToDetail: function(event) {
+        window.alert('Go to detail of ' + this.model.get('name'));
+      },
+  
+      startHighlight: function(event) {
+        this.$el.addClass('highlight');
+      },
+  
+      stopHighlight: function(event) {
+        this.$el.removeClass('highlight');
+      }
+  
+    });
+
+All the functions to the right get executed when the events to the left
+are triggered on the view's DOM elements at left.
+
+    events: {
+      'click .more':        'showMore',
+      'click .less':        'showLess',
+      'click h2':           'goToDetail',
+      'mouseover':          'startHighlight',
+      'mouseout':           'stopHighlight'
+    }
+
+All functions change the DOM or trigger alerts.
+
+
+#### Changing model attributes
+
+Very often, we update the model's attributes with these view events.
+
+    var PersonView = Backbone.View.extend({
+  
+      'className': 'person-view',
+  
+      initialize: function() {
+        this.model.on('change', this.render);
+      },
+  
+      template: _.template( $('#person-view').html() ),
+  
+      render: function() {
+        var content = this.template(this.model.toJSON());
+        this.$el.html(content);
+  
+        return this;
+      },
+  
+      events: {
+        'click h2':           'selectPerson',
+        // ...
+      },
+
+      selectPerson: function(event) {
+        if (this.model.get('selected')) {
+          this.model.set('selected', false);
+        } else {
+          this.model.set('selected', true);
+        }
+      },
+  
+      // ...
+  
+    });
+
+This will trigger an interesting line of events. Let's give an overview:
+
+1. User clicks `h2` title
+2. View calls `selectPerson`
+3. Function will toggle the `selected` attribute of the model
+4. Model emits `change` event
+5. Since the view's render function is tied to this event, `render`
+   get's called
+6. Render takes the model's attributes (some of them were just updated)
+   and displays itself with the updated values.
+
+Now, since our view does not display the "selected" state, it's better
+not to rerender itself when selected changes. So we need to be more 
+specific to what events we listen to.
+
+
+#### Same model, different view
+
+However, another view is displaying the content of the same model.
+
+The views template:
+
+    <script type="text/template" id="list-view">
+      <span class"title" <%- title %> </span> | 
+      <span class="select" <%- selected %> </span>
+    </script>
+
+We create a collection:
+
+    var Person = Backbone.Model.extend({
+      // ...
+    });
+  
+    var source = [
+      // ...
+    ];
+  
+  
+    var Coworkers = Backbone.Collection.extend({
+      // ...
+    });
+  
+    var coworkers = new Coworkers(source);
+
+Our view definition:
+
+    var ListView = Backbone.View.extend({
+      tagName: 'li',
+  
+      className: 'list-view',
+  
+      initialize: function() {
+        this.listenTo(this.model, 'change:selected', this.render);
+        this.listenTo(this.model, 'change:name', this.render);
+      },
+  
+      template: _.template( $('#list-view').html() ),
+  
+      render: function() {
+        var content = {
+          selected: this.model.get('selected') ? 'selected' : '',
+          title: this.model.get('name')
+        }
+        this.$el.html( this.template( content ) );
+  
+        return this;
+      },
+    });
+  
+    var $list = $('.list');
+  
+    coworkers.each(function(coworker) {
+      var view = new ListView( {model: coworker} );
+      $list.append(view.render().el);
+    });
+
+We now see 2 interesting things:
+
+* A view is automatically updated by listening for change events.
+* A model can have multiple views
+
+
+#### What problem does it solve
+
+Views are concerned with displaying data and capturing user interaction.
+
+
+#### How does this prevent spaghetti code?
+
+* User interaction is only captured into view's event hashes
+* The only way a user can update models is via views
+* The model and its representation is completely separated
 
 
 ### What is the router?
