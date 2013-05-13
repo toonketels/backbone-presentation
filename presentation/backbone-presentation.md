@@ -60,10 +60,19 @@ Goal:
 > conversions, validations, computed properties, and access control.
 >    [Backbone documentation: model](http://backbonejs.org/#Model)
 
-A object to group data and functions related to a data item together.
+An object to group data and functions related to the data together.
 
 It provides default events and utility functions to save/get 
 data from a data store.
+
+
+#### Example models
+
+* node
+* user
+* post
+* comment
+* checkout flow
 
 
 #### Creating a model
@@ -73,7 +82,7 @@ To create a standard model, just pass attributes to it.
     var toon = new Backbone.Model({
       name: "Toon Ketels",
       age: 30,
-      profession: "developer",
+      job: "Developer",
       bio: "<p>Scrum master, backend Drupal developer.</p>",
       uid: 7544
     });
@@ -149,6 +158,7 @@ loosely coupled systems.
       console.log(model);
     });
 
+
 The above code will be triggered anytime a model attribute changes.
 
 We can also be more specific in the change events we want to listen to.
@@ -190,6 +200,7 @@ is the standard way.
       id: 'tk-7544-corl'
     });
 
+
 [Underscore](http://underscorejs.org/#extend) offers the `extend` method for subclassing.
 
     _.extend(destination, *sources)
@@ -230,6 +241,7 @@ by default.
 
     });
 
+
 When creating the toon instance the values will be:
 
     {
@@ -264,6 +276,7 @@ something something if incorrect.
   
     });
 
+
 By default, `isValid` is only called just before `save`. But we can 
 call it ourself.
 
@@ -279,42 +292,15 @@ But we can validate when attributes are set too.
     toon.set('age', 'none', {validate: true});
 
 
-#### ID's
+    toon.set('age', 'none');
+    toon.isValid();               // false
+    toon.validationError;         // "Age should be a number"
 
-Backbone will add a "client ID" for each model. It's guaranteed to be
-unique for all models over all types for the given client.
+    toon.set('age', 'none', {validate: true});
 
-    toon.cid                     // c1 
+But we can validate when attributes are set too.
 
-Most of the time, models have ID's on the server to. If ID is an attribute,
-Backbone provides a shortcut to access it.
-
-    toon.get('id')               // tk-7544-corl
-    toon.id                      // tk-7544-corl
-
-Since not all IDS are called `id`, we can specifically set which attribute
-is the server side ID.
-
-    var Person = Backbone.Model.extend({
-  
-      idAttribute: 'uid',
-  
-    });
-
-Above we say `uid` is the server side unique identifier.
-
-    toon.get('id')               // tk-7544-corl
-    toon.get('uid')              // 7544
-    toon.id                      // 7544
-
-
-#### URL
-
-The cool thing with Backbone is that it allows us the update the models
-server side on `save`. This will perform a put/post request to the server.
-
-Therefore ach model can have a url property. It is automatically generated
-as urlRoot/[id] and the root will come from the collection.
+    toon.set('age', 'none', {validate: true});
 
 
 #### What problem does it solve?
@@ -332,6 +318,7 @@ And it offers an object to represent your server side data on the client.
   getting, defaults, ids).
 * It emit events when attributes change
 * We don't need to write code to update the resources on the server anymore.
+
 
 
 ### Collections
@@ -361,6 +348,7 @@ Abstract collections
 * Controls on a slideshow
 * Main menu links
 * Pager in search results
+
 
 
 #### How to create a collection
@@ -408,8 +396,10 @@ automatically.
         id: 'jb-410-corl'
       }
     ];
-  
+
     var coworkers = new Coworkers(source);
+    
+
 
 This will create an object like this:
 
@@ -418,6 +408,9 @@ This will create an object like this:
       length: 3,
       models: Array[3]
     }
+
+
+
 
 `model` attribure can also be a function to dynamically determine the
 type based on some properties.
@@ -452,7 +445,7 @@ Add a new coworker:
         name: "Dries Gaastra",
         age: 19,
         country: "the Netherlands",
-        profession: "themer",
+        job: "themer",
         bio: "<p>Plays with css and javascript all day long.</p>",
         uid: 9016,
         id: 'dg-9016-corl'
@@ -471,11 +464,14 @@ Collections are sorted on the `comparator` attribute.
 
 We can change it and sort the collection again.
 
-    coworkers.comparator = 'name';
+    coworkers.comparator = function(model) {
+      return model.get('name');
+    }
     coworkers.sort();
 
     coworkers.comparator = 'country';
     coworkers.sort();
+
 
 
 #### Event aggregation
@@ -533,6 +529,8 @@ They can use templates to actually display html.
 * A blogpost
 * A button to paginate
 
+List of blogpostsA blogpostA button to paginate
+
 
 #### Create view
 
@@ -570,7 +568,7 @@ We've also added the render method which will display a name in a h2.
 However, it's not in the DOM yet.
 
 
-#### Adding view to the DOM
+#### Display view to the DOM
 
 The code (object) creating the view should attach it to the dom.
 
@@ -604,8 +602,8 @@ Pass in a model and render the contents of the model.
      'className': 'person-view',
   
       render: function() {
-        var title = '<h2>'+this.model.get('name')+'</h2>';
-        this.$el.html(title);
+        var content = '<h2>'+this.model.get('name')+'</h2>';
+        this.$el.html(content);
   
         return this;
       }
@@ -929,17 +927,11 @@ Views are concerned with displaying data and capturing user interaction.
 
 * User interaction is only captured into view's event hashes
 * The only way a user can update models is via views
+* Use templates to make managing html output more maintainable
 * The model and its representation is completely separated
+* Views update on model changes, so other code can trigger the updates
 
 
-### What is the router?
-
-
-
-
-### Syncing with the backend
-
-## All together now
 
 ## After thoughts
 
