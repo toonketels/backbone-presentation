@@ -373,7 +373,7 @@ automatically.
       {
         name: "Toon Ketels",
         age: 30,
-        profession: "developer",
+        job: "Developer",
         bio: "<p>Scrum master, backend Drupal developer.</p>",
         uid: 7544,
         id: 'tk-7544-corl'
@@ -390,7 +390,7 @@ automatically.
         name: "Jan Bollen",
         age: 30,
         country: "the Netherlands",
-        profession: "product owner",
+        job: "product owner",
         bio: "<p>Loves working with team.</p>",
         uid: 410,
         id: 'jb-410-corl'
@@ -674,7 +674,7 @@ In our HTML we add the following:
 
     <script type="text/template" id="person-view">
       <h2><%= name %></h2>
-      <p><span class="profession"><%= profession %></span> | <span class="country"><%= country %></span></p>
+      <p><span class="job"><%= job %></span> | <span class="country"><%= country %></span></p>
       <div  class="controls"> <span class='more'>More</span><span class='less hide'>Less</span></div>
       <div class="bio hide"><%= bio %></div>
     </script>
@@ -685,7 +685,7 @@ The view will change into:
       'className': 'person-view',
 
       initialize: function() {
-        this.model.on('change', this.render);
+        this.listenTo(this.model, 'change', this.render);
       },
 
       template: _.template( $('#person-view').html() ),
@@ -859,8 +859,8 @@ However, another view is displaying the content of the same model.
 The views template:
 
     <script type="text/template" id="list-view">
-      <span class"title" <%- title %> </span> | 
-      <span class="select" <%- selected %> </span>
+      <td><%- title %><td>
+      <td><span class="label label-info" <%- selected %> </span></td>
     </script>
 
 We create a collection:
