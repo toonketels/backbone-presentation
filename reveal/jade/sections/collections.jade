@@ -1,0 +1,194 @@
+section
+  section
+    h2 Collections
+    code new Backbone.Collection()
+
+  section
+    h2 What?
+
+  section
+    blockquote Collections are ordered sets of models.
+    p
+      small <a href="http://backbonejs.org/#Collection">backbonejs.org/#Collection</a>
+
+  section
+    h3 Examples
+    ul
+      li Users
+      li Latest articles
+      li Articles promoted to frontpage
+      li All pages
+      li All nodes
+
+  section
+    h3 Examples
+    ul
+      li Controls on a slideshow
+      li Main menu links
+      li Pager in search results
+
+  section
+    h2 How to create a Collection?
+
+  section
+    pre
+      code.
+        var Coworkers = Backbone.Collection.extend({
+    
+          model: Person
+        
+        });
+
+  section
+    pre
+      code.
+        var source = [
+          {
+            name: "Toon Ketels",
+            age: 30,
+            job: "Developer",
+            bio: "<p>Scrum master, backend Drupal developer.</p>",
+            uid: 7544,
+            id: 'tk-7544-corl'
+          },
+          {
+            name: "An Katrien",
+            age: 23,
+            country: "the Netherlands",
+            bio: "<p>Works in Germany. Loves to gamble.</p>",
+            uid: 3400,
+            id: 'ak-3400-corl'
+          },
+          {
+            name: "Jan Bollen",
+            age: 30,
+            country: "the Netherlands",
+            job: "product owner",
+            bio: "<p>Loves working with team.</p>",
+            uid: 410,
+            id: 'jb-410-corl'
+          }
+        ];
+
+  section
+    pre
+      code.
+        var coworkers = new Coworkers(source);
+
+  section
+    pre
+      code.
+        {
+          _byId: Object,
+          length: 3,
+          models: Array[3]
+        }
+
+  section
+    h2 What can we do with it?
+
+  section
+    h3 Get models
+    pre.fragment
+      code.
+        coworkers.at(1);
+        coworkers.get(410);
+
+    pre.fragment
+      code.
+        coworkers.where({country: "the Netherlands"});
+
+  section
+    h3 Remove/add models
+
+  section
+    h3 Removing
+    pre
+      code.
+        var someone = coworkers.at(1);
+        coworkers.remove(someone);
+
+  section
+    h3 Adding
+    pre
+      code.
+        var noob = new Person({
+            name: "Dries Gaastra",
+            age: 19,
+            country: "the Netherlands",
+            job: "Themer",
+            bio: "<p>Plays with css and javascript all day long.</p>",
+            uid: 9016,
+            id: 'dg-9016-corl'
+        });
+        coworkers.add(noob);
+
+  section
+    h3 Sorting
+    pre.fragment
+      code.
+        var Coworkers = Backbone.Collection.extend({
+    
+          model: Person,
+
+          comparator: 'age'
+        
+        });
+
+
+  section
+    h3 Reorder collection
+    pre.fragment
+      code.
+        coworkers.comparator = function(model) {
+          return model.get('name');
+        }
+        coworkers.sort();
+    
+        coworkers.comparator = 'country';
+        coworkers.sort();
+
+  section
+    h2 Events
+    blockquote Hey, I've been sorted!
+
+  section
+    pre
+      code.
+        coworkers.on('sort', function(model, value) {
+          // ...
+        });
+
+  section
+    pre
+      code.
+        coworkers.on('change:age', function(model, value) {
+          // ...
+        });
+
+  section
+    pre
+      code.
+        coworkers.on('all', function() {
+          console.log('event emitted');
+          console.log(arguments);
+        });
+
+  section
+    h2 Got it?
+    ul
+      li.fragment Create a collection
+      li.fragment Get models
+      li.fragment Add/remove models
+      li.fragment Sort
+      li.fragment Emit events
+
+  section
+    h2 How does this help me organize my code?
+    ul
+      li.fragment Organize sets of models into groups
+      li.fragment Tie collection related functions together with the collection
+      li.fragment Emit events and aggregate events of models. We no longer need pointers to all the models.
+
+
+

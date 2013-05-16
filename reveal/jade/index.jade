@@ -1,0 +1,67 @@
+include includes/header.html
+
+
+section
+  h1 Backbone.js
+   h5 Introducing Backbone, manage javascript application complexitiy.
+   p
+     small <a href="http://toonketels.be">Toon Ketels</a> / <a href="http://twitter.com/toonketels">@toonketels</a>
+
+section
+  h2 Overview
+  ul
+    li What is Backbone
+    li Models
+    li Collections
+    li Views
+    li Wrap up
+
+
+include sections/what.jade
+
+include sections/talk.jade
+
+include sections/models.jade
+
+include sections/collections.jade
+
+include sections/views.jade
+
+section
+  section
+    h2 That's it
+
+  section
+    h2 Recap
+    ul
+      li.fragment Models
+      li.fragment Collections
+      li.fragment Views
+
+section
+  section
+    h2 One more thing...
+  
+  section
+    blockquote By binding to model change event, the view automatically gets updated. The view does not care who updates the model or how.
+  
+  section
+    h2 Same principle applies to collections too
+  
+  section 
+    blockquote A view binds to the collections change event to automatically updated itself. 
+    blockquote.fragment A view does not care who updates the collection or how.
+    blockquote.fragment One view can update the display of another view via a collection, without even knowing it.
+  
+section
+  h2 Now we're really done.
+
+section
+   h1 Thanks
+   h3 <a href="http://toonketels.be">Toon Ketels</a> / <a href="http://twitter.com/toonketels">@toonketels</a></h3>
+
+
+
+
+
+include includes/footer.html

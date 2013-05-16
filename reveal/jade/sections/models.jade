@@ -1,0 +1,166 @@
+section
+  section
+    h2 Models
+    code new Backbone.Model()
+
+  section
+    h2 What?
+
+  section
+    blockquote Models are the heart of any JavaScript application, containing the interactive data as well as a large part of the logic surrounding it: conversions, validation, computed properties, and access control.
+    p
+      small <a href="http://backbonejs.org/#Model">backbonejs.org/#Model</a>
+
+  section
+    blockquote An object to group data and functions related to the data together.
+
+  section
+    h2 Examples
+    ul
+      li node
+      li user
+      li post
+      li comment
+
+  section
+    h2 How to create a model?
+
+  section
+    pre
+      code.
+        var toon = new Backbone.Model({
+          name: "Toon Ketels",
+          age: 30,
+          job: "Developer",
+          bio: "<p>Scrum master, backend Drupal developer.</p>",
+          uid: 7544
+        });
+
+  section
+    pre
+      code.
+        {
+          _changing: false,
+          _pending: false,
+          _previousAttributes: {/*...*/},
+          _attributes: {/*...*/},
+          changed: {/*...*/},
+          cid: "cid"
+        };
+
+  section
+    h2 What can we do with it?
+
+  section
+    h3 Get attributes
+    pre.fragment
+      code.
+        toon.has('age');
+        toon.get('age');
+        toon.escape('bio');
+
+  section
+    h3 Set attributes
+    pre.fragment
+      code.
+        toon.set('age', 31);
+        
+    pre.fragment
+      code.
+        toon.changed;
+        toon.previousAttributes();
+
+  section
+    h3 Events
+    blockquote Hey, I've changed!
+
+  section
+    pre
+      code.
+        toon.on('change', function(model) {
+          console.log('changed');
+          console.log(model);
+        });
+
+  section
+    pre
+      code.
+        toon.on('change:age', function(model, value) {
+          console.log('Age has hanged');
+          console.log(model);
+          console.log(value);
+        });
+
+  section
+    h2 Another way to create models
+    h5 ...better...
+
+  section
+    pre
+      code.
+        var Person = Backbone.Model.extend({
+          // Custom methods
+        });
+    
+        var toon = new Person({...});
+
+  section
+    h2 What can we add?
+
+  section
+    h3 Default attributes
+    pre.fragment
+      code.
+        var Person = Backbone.Model.extend({
+      
+          defaults: {
+            country: "Belgium",
+            profession: "Analyst"
+          }
+    
+        });
+
+  section
+    h3 Validation
+    pre.fragment
+      code.
+        var Person = Backbone.Model.extend({
+        
+          validate: function(attributes, options) {
+            if (typeof attributes.age !== "number") {
+              return "Age should be a number";
+            }
+          }
+      
+        });
+
+  section
+    pre
+      code.
+        toon.set('age', 'none');
+        toon.isValid();               // false
+        toon.validationError;         // "Age should be a number"
+    
+    pre.fragment
+      code.
+        toon.set('age', 'none', {validate: true});
+
+  section
+    h3 Whatever we want
+
+  section
+    h2 Got it?
+    ul
+      li.fragment Create a model
+      li.fragment Get/set attributes, previousAttributes
+      li.fragment Emit events
+      li.fragment Subclass
+      li.fragment Defaults
+      li.fragment Validate
+
+  section
+    h2 How does this help me organize my code?
+    ul
+      li.fragment Separation data/functionality
+      li.fragment Tie data related functions related together with the data
+      li.fragment No polling, get alerted on changes (events)

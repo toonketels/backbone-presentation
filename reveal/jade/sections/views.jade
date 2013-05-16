@@ -1,0 +1,338 @@
+section
+  section
+    h2 Views
+    code new Backbone.View()
+
+  section
+    h2 What?
+
+  section
+    blockquote Views are objects which do two things: 1) display data (most of the time models) and 2) capture user interaction to trigger code.
+
+  section
+    h2 Examples
+    ul
+      li.fragment List of blogposts
+      li.fragment A blogpost
+      li.fragment A button to paginate
+
+  section
+    h2 How to create a view?
+
+  section
+    pre
+      code.
+        var view = new Backbone.View( {el: $('#main') } );
+
+    p.fragment <strong>root DOM element node</strong>
+
+  section
+    h2 How to create new root element node?
+
+  section
+    pre
+      code.
+        var PersonView = Backbone.View.extend({
+          className: 'person-view',
+        });
+    
+        var view = new PersonView();
+
+  section
+    h2 How to add content?
+    blockquote The view is just an empty div.
+
+  section
+    pre
+      code.
+        var PersonView = Backbone.View.extend({
+          className: 'person-view',
+    
+          render: function() {
+            this.$el.html( '<h2>Toon Ketels</h2>' );
+    
+            return this;
+          }
+        });
+  
+  section
+    h2 How to display the view?
+    blockquote A.K.A. How to insert it into the DOM?
+
+  section
+    pre
+      code.
+        var view = new PersonView();
+    
+        $('#main').append( view.render().el );
+
+  section
+    h2 How to dynamically display data?
+    blockquote Not the same old string every time again...
+
+  section
+    pre
+      code.
+        var toon = new Person({
+          name: "Toon Ketels",
+          age: 30,
+          job: "Developer",
+          bio: "<p>Scrum master, backend Drupal developer.</p>",
+          uid: 7544,
+          id: 'tk-7544-corl'
+        });
+    
+        var view = new PersonView( {model: toon} );
+
+  section
+    pre
+      code.
+        var PersonView = Backbone.View.extend({
+         'className': 'person-view',
+      
+          render: function() {
+            var content = '<h2>'+this.model.get('name')+'</h2>';
+            this.$el.html(content);
+      
+            return this;
+          }
+    
+        });
+
+  section
+    h2 How to prevent displaying stale data?
+    blockquote The model has changed, the view not.
+
+  section
+    pre
+      code.
+        var Personview = Backbone.View.extend({
+          'className': 'person-view',
+    
+          initialize: function() {
+             this.model.on('change', this.render);
+          },
+      
+          render: function() {
+            var content = '<h2>'+this.model.get('name')+'</h2>';
+            this.$el.html(content);
+      
+            return this;
+          }
+    
+        });
+
+  section
+    pre
+      code.
+        this.model.on('change', this.render);
+
+    pre.fragment
+      code.
+        this.listenTo(this.model, 'change', this.render);
+
+  section
+    h2 How to stop using HTML strings in my views' code?
+    blockquote My eyes hurt, it's ugly!
+
+
+  section
+    h3 JavaScript templates
+    code _.template()
+
+  section
+    pre
+      code.
+        <script type="text/template" id="person-view">
+          <h2><%= name %></h2>
+          <p><span class="job"><%= job %></span> | <span class="country"><%= country %></span></p>
+          <div  class="controls"> <span class='more'>More</span><span class='less hide'>Less</span></div>
+          <div class="bio hide"><%= bio %></div>
+        </script>
+
+  section
+    pre
+      code.
+        var Personview = Backbone.View.extend({
+          'className': 'person-view',
+    
+          initialize: function() {
+            this.listenTo(this.model, 'change', this.render);
+          },
+    
+          template: _.template( $('#person-view').html() ),
+      
+          render: function() {
+            var content = this.template( this.model.toJSON() );
+            this.$el.html(content);
+      
+            return this;
+          }
+    
+        });
+
+  section
+    pre
+      code.
+          template: _.template( $('#person-view').html() ),
+
+    pre.fragment
+      code.
+        var content = this.template( this.model.toJSON() );
+
+  section
+    h2 How about User Interaction?
+    blockquote Views are also about capturing user intent, aren't they?
+
+  section
+    code events
+
+  section
+    pre
+      code.
+        var PersonView = Backbone.View.extend({
+
+          // ...
+      
+          events: {
+            'click .more':        'showMore',
+            'click .less':        'showLess',
+            'click h2':           'goToDetail',
+            'mouseover':          'startHighlight',
+            'mouseout':           'stopHighlight'
+          },
+      
+          showMore: function(event) {
+            // ...
+          },
+      
+          showLess: function(event) {
+            // ...
+          },
+      
+          goToDetail: function(event) {
+            // ...
+          },
+      
+          startHighlight: function(event) {
+            // ...
+          },
+      
+          stopHighlight: function(event) {
+            // ...
+          }
+      
+        });
+
+  section
+    h2 Keeping state
+    blockquote Person is selected. Selected is a "state", no?
+
+  section
+    pre
+      code.
+        var PersonView = Backbone.View.extend({
+
+          // ...
+      
+          events: {
+            'click h2':           'selectPerson',
+            // ...
+          },
+    
+          selectPerson: function(event) {
+            if (this.model.get('selected')) {
+              this.model.set('selected', false);
+            } else {
+              this.model.set('selected', true);
+            }
+          },
+      
+          // ...
+      
+        });
+
+  section
+    h2 Line of events
+    blockquote Going back and forth
+
+  section
+    ul
+      li.fragment User clicks `h2` title
+      li.fragment View calls `selectPerson`
+      li.fragment Function will toggle the `selected` attribute of the model
+      li.fragment Model emits `change` event
+      li.fragment Since the view's render function is tied to this event, `render` get's called
+      li.fragment Render takes the model's attributes (some of them were just updated) and displays itself with the updated values.
+ 
+  section
+    h2 Same model, different view
+    blockquote What you get when data and representation are separate...
+
+  section
+    h3 Template
+    pre
+      code.
+        <script type="text/template" id="list-view">
+          <td><%- title %><td>
+          <td><span class="label label-info" <%- selected %> </span></td>
+        </script>
+
+  section
+    h3 View
+    pre
+      code.
+        var TableRowView = Backbone.View.extend({
+      
+          tagName: 'tr',
+      
+          initialize: function() {
+            this.listenTo(this.model, 'change:selected', this.render);
+            this.listenTo(this.model, 'change:name', this.render);
+          },
+      
+          template: _.template( $('#table-row-view').html() ),
+      
+          render: function() {
+            var content = {
+              selected: this.model.get('selected') ? 'selected' : '',
+              title: this.model.get('name')
+            };
+            this.$el.html( this.template( content ) );
+      
+            return this;
+          },
+      
+        });
+
+  section
+    h2 3 interesting things
+    ol
+      li.fragment one model, two views
+      li.fragment view updates itself
+      li.fragment a different view updates the model
+
+  section
+    h2 Got it?
+    ul
+      li.fragment Create a view
+      li.fragment Set its contents
+      li.fragment Insert it into the DOM
+      li.fragment Pass models so the content is dynamic
+      li.fragment Auto update its display when model changes
+      li.fragment Use templates
+      li.fragment Catch user interaction with "events" property
+
+  section
+    h2 How does this help me organize my code?
+    ul
+      li.fragment All user interaction goes via Views, in its events hash
+      li.fragment Separate data (model) from display (view) allows us to have multiple displays
+      li.fragment Templates keep the views code tidy
+      li.fragment By binding to model change event, the view automatically gets updated.
+
+  section
+    blockquote By binding to model change event, a view automatically gets updated.
+    blockquote.fragment A view does not care who updates the model or how.
+    blockquote.fragment One view can update the display of another view via a model, without even knowing it.
+

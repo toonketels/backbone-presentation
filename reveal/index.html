@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Backbone Presentation</title>
+
+        <meta name="description" content="Introducing Backbone, managee cjavascript application complexitiy.">
+        <meta name="author" content="Toon Ketels">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/reveal.min.css">
+        <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+        <script>
+            document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+<section>
+  <h1>Backbone.js
+    <h5>Introducing Backbone, manage javascript application complexitiy.</h5>
+    <p><small><a href="http://toonketels.be">Toon Ketels</a> / <a href="http://twitter.com/toonketels">@toonketels</a></small></p>
+  </h1>
+</section>
+<section>
+  <h2>Overview</h2>
+  <ul>
+    <li>What is Backbone</li>
+    <li>Models</li>
+    <li>Collections</li>
+    <li>Views</li>
+    <li>Wrap up</li>
+  </ul>
+</section>
+<section>
+  <section>
+    <h2>What is backbone.js?</h2>
+  </section>
+  <section>
+    <blockquote>Backbone.js gives structure to web applications by providing models with key-value binding and custom events, collections with a rich API of enumerable functions, views with declarative event handling, and connects it all to your existing API over a RESTful JSON interface.</blockquote>
+    <p><small><a href="http://backbonejs.org/">backbonejs.org</a></small></p>
+  </section>
+  <section>
+    <ul>
+      <li class="fragment">structure</li>
+      <li class="fragment">models</li>
+      <li class="fragment">collections</li>
+      <li class="fragment">views</li>
+      <li class="fragment">connect to backend over JSON</li>
+    </ul>
+  </section>
+</section>
+<section>
+  <section>
+    <h2>What this talk is about</h2>
+  </section>
+  <section>
+    <h2>About</h2>
+    <ul> 
+      <li class="fragment">the fundamental building blocks of backbone</li>
+      <li class="fragment">how they relate together</li>
+      <li class="fragment">how they help you structure your code</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Not about</h2>
+    <ul>
+      <li class="fragment">How to use Backbone and Drupal</li>
+      <li class="fragment">Tutorial on building your first backbone app</li>
+    </ul>
+  </section>
+  <section>
+    <blockquote>Let's focus on understanding the fundamentals, so we can hack existing apps, know were everything goes and don't curse backbone.js for all the complexity adds, 'cause... it is making our lives easier.</blockquote>
+  </section>
+  <section>
+    <blockquote>Committed and pushed to 8.x</blockquote>
+    <p><small><a href="http://drupal.org/node/1149866#comment-6602272">webchick</a></small></p>
+  </section>
+</section>
+<section>
+  <section>
+    <h2>Models</h2><code>new Backbone.Model()</code>
+  </section>
+  <section>
+    <h2>What?</h2>
+  </section>
+  <section>
+    <blockquote>Models are the heart of any JavaScript application, containing the interactive data as well as a large part of the logic surrounding it: conversions, validation, computed properties, and access control.</blockquote>
+    <p><small><a href="http://backbonejs.org/#Model">backbonejs.org/#Model</a></small></p>
+  </section>
+  <section>
+    <blockquote>An object to group data and functions related to the data together.</blockquote>
+  </section>
+  <section>
+    <h2>Examples</h2>
+    <ul>
+      <li>node</li>
+      <li>user</li>
+      <li>post</li>
+      <li>comment</li>
+    </ul>
+  </section>
+  <section>
+    <h2>How to create a model?</h2>
+  </section>
+  <section>
+    <pre><code>
+        var toon = new Backbone.Model({
+          name: "Toon Ketels",
+          age: 30,
+          job: "Developer",
+          bio: "<p>Scrum master, backend Drupal developer.</p>",
+          uid: 7544
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        {
+          _changing: false,
+          _pending: false,
+          _previousAttributes: {/*...*/},
+          _attributes: {/*...*/},
+          changed: {/*...*/},
+          cid: "cid"
+        };
+        </code></pre>
+  </section>
+  <section>
+    <h2>What can we do with it?</h2>
+  </section>
+  <section>
+    <h3>Get attributes</h3>
+    <pre class="fragment"><code>
+        toon.has('age');
+        toon.get('age');
+        toon.escape('bio');
+        </code></pre>
+  </section>
+  <section>
+    <h3>Set attributes</h3>
+    <pre class="fragment"><code>
+        toon.set('age', 31);
+        </code></pre>
+    <pre class="fragment"><code>
+        toon.changed;
+        toon.previousAttributes();
+        </code></pre>
+  </section>
+  <section>
+    <h3>Events</h3>
+    <blockquote>Hey, I've changed!</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        toon.on('change', function(model) {
+          console.log('changed');
+          console.log(model);
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        toon.on('change:age', function(model, value) {
+          console.log('Age has hanged');
+          console.log(model);
+          console.log(value);
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>Another way to create models</h2>
+    <h5>...better...</h5>
+  </section>
+  <section>
+    <pre><code>
+        var Person = Backbone.Model.extend({
+          // Custom methods
+        });
+        
+        var toon = new Person({...});
+        </code></pre>
+  </section>
+  <section>
+    <h2>What can we add?</h2>
+  </section>
+  <section>
+    <h3>Default attributes</h3>
+    <pre class="fragment"><code>
+        var Person = Backbone.Model.extend({
+        
+          defaults: {
+            country: "Belgium",
+            profession: "Analyst"
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h3>Validation</h3>
+    <pre class="fragment"><code>
+        var Person = Backbone.Model.extend({
+        
+          validate: function(attributes, options) {
+            if (typeof attributes.age !== "number") {
+              return "Age should be a number";
+            }
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        toon.set('age', 'none');
+        toon.isValid();               // false
+        toon.validationError;         // "Age should be a number"
+        </code></pre>
+    <pre class="fragment"><code>
+        toon.set('age', 'none', {validate: true});
+        </code></pre>
+  </section>
+  <section>
+    <h3>Whatever we want</h3>
+  </section>
+  <section>
+    <h2>Got it?</h2>
+    <ul>
+      <li class="fragment">Create a model</li>
+      <li class="fragment">Get/set attributes, previousAttributes</li>
+      <li class="fragment">Emit events</li>
+      <li class="fragment">Subclass</li>
+      <li class="fragment">Defaults</li>
+      <li class="fragment">Validate</li>
+    </ul>
+  </section>
+  <section>
+    <h2>How does this help me organize my code?</h2>
+    <ul>
+      <li class="fragment">Separation data/functionality</li>
+      <li class="fragment">Tie data related functions related together with the data</li>
+      <li class="fragment">No polling, get alerted on changes (events)</li>
+    </ul>
+  </section>
+</section>
+<section>
+  <section>
+    <h2>Collections</h2><code>new Backbone.Collection()</code>
+  </section>
+  <section>
+    <h2>What?</h2>
+  </section>
+  <section>
+    <blockquote>Collections are ordered sets of models.</blockquote>
+    <p><small><a href="http://backbonejs.org/#Collection">backbonejs.org/#Collection</a></small></p>
+  </section>
+  <section>
+    <h3>Examples</h3>
+    <ul>
+      <li>Users</li>
+      <li>Latest articles</li>
+      <li>Articles promoted to frontpage</li>
+      <li>All pages</li>
+      <li>All nodes</li>
+    </ul>
+  </section>
+  <section>
+    <h3>Examples</h3>
+    <ul>
+      <li>Controls on a slideshow</li>
+      <li>Main menu links</li>
+      <li>Pager in search results</li>
+    </ul>
+  </section>
+  <section>
+    <h2>How to create a Collection?</h2>
+  </section>
+  <section>
+    <pre><code>
+        var Coworkers = Backbone.Collection.extend({
+        
+          model: Person
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        var source = [
+          {
+            name: "Toon Ketels",
+            age: 30,
+            job: "Developer",
+            bio: "<p>Scrum master, backend Drupal developer.</p>",
+            uid: 7544,
+            id: 'tk-7544-corl'
+          },
+          {
+            name: "An Katrien",
+            age: 23,
+            country: "the Netherlands",
+            bio: "<p>Works in Germany. Loves to gamble.</p>",
+            uid: 3400,
+            id: 'ak-3400-corl'
+          },
+          {
+            name: "Jan Bollen",
+            age: 30,
+            country: "the Netherlands",
+            job: "product owner",
+            bio: "<p>Loves working with team.</p>",
+            uid: 410,
+            id: 'jb-410-corl'
+          }
+        ];
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        var coworkers = new Coworkers(source);
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        {
+          _byId: Object,
+          length: 3,
+          models: Array[3]
+        }
+        </code></pre>
+  </section>
+  <section>
+    <h2>What can we do with it?</h2>
+  </section>
+  <section>
+    <h3>Get models</h3>
+    <pre class="fragment"><code>
+        coworkers.at(1);
+        coworkers.get(410);
+        </code></pre>
+    <pre class="fragment"><code>
+        coworkers.where({country: "the Netherlands"});
+        </code></pre>
+  </section>
+  <section>
+    <h3>Remove/add models</h3>
+  </section>
+  <section>
+    <h3>Removing</h3>
+    <pre><code>
+        var someone = coworkers.at(1);
+        coworkers.remove(someone);
+        </code></pre>
+  </section>
+  <section>
+    <h3>Adding</h3>
+    <pre><code>
+        var noob = new Person({
+            name: "Dries Gaastra",
+            age: 19,
+            country: "the Netherlands",
+            job: "Themer",
+            bio: "<p>Plays with css and javascript all day long.</p>",
+            uid: 9016,
+            id: 'dg-9016-corl'
+        });
+        coworkers.add(noob);
+        </code></pre>
+  </section>
+  <section>
+    <h3>Sorting</h3>
+    <pre class="fragment"><code>
+        var Coworkers = Backbone.Collection.extend({
+        
+          model: Person,
+          
+          comparator: 'age'
+          
+        });
+        
+        </code></pre>
+  </section>
+  <section>
+    <h3>Reorder collection</h3>
+    <pre class="fragment"><code>
+        coworkers.comparator = function(model) {
+          return model.get('name');
+        }
+        coworkers.sort();
+        
+        coworkers.comparator = 'country';
+        coworkers.sort();
+        </code></pre>
+  </section>
+  <section>
+    <h2>Events</h2>
+    <blockquote>Hey, I've been sorted!</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        coworkers.on('sort', function(model, value) {
+          // ...
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        coworkers.on('change:age', function(model, value) {
+          // ...
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        coworkers.on('all', function() {
+          console.log('event emitted');
+          console.log(arguments);
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>Got it?</h2>
+    <ul>
+      <li class="fragment">Create a collection</li>
+      <li class="fragment">Get models</li>
+      <li class="fragment">Add/remove models</li>
+      <li class="fragment">Sort</li>
+      <li class="fragment">Emit events</li>
+    </ul>
+  </section>
+  <section>
+    <h2>How does this help me organize my code?</h2>
+    <ul>
+      <li class="fragment">Organize sets of models into groups</li>
+      <li class="fragment">Tie collection related functions together with the collection</li>
+      <li class="fragment">Emit events and aggregate events of models. We no longer need pointers to all the models.</li>
+    </ul>
+  </section>
+</section>
+<section>
+  <section>
+    <h2>Views</h2><code>new Backbone.View()</code>
+  </section>
+  <section>
+    <h2>What?</h2>
+  </section>
+  <section>
+    <blockquote>Views are objects which do two things: 1) display data (most of the time models) and 2) capture user interaction to trigger code.</blockquote>
+  </section>
+  <section>
+    <h2>Examples</h2>
+    <ul>
+      <li class="fragment">List of blogposts</li>
+      <li class="fragment">A blogpost</li>
+      <li class="fragment">A button to paginate</li>
+    </ul>
+  </section>
+  <section>
+    <h2>How to create a view?</h2>
+  </section>
+  <section>
+    <pre><code>
+        var view = new Backbone.View( {el: $('#main') } );
+        </code></pre>
+    <p class="fragment"><strong>root DOM element node</strong></p>
+  </section>
+  <section>
+    <h2>How to create new root element node?</h2>
+  </section>
+  <section>
+    <pre><code>
+        var PersonView = Backbone.View.extend({
+          className: 'person-view',
+        });
+        
+        var view = new PersonView();
+        </code></pre>
+  </section>
+  <section>
+    <h2>How to add content?</h2>
+    <blockquote>The view is just an empty div.</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        var PersonView = Backbone.View.extend({
+          className: 'person-view',
+          
+          render: function() {
+            this.$el.html( '<h2>Toon Ketels</h2>' );
+            
+            return this;
+          }
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>How to display the view?</h2>
+    <blockquote>A.K.A. How to insert it into the DOM?</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        var view = new PersonView();
+        
+        $('#main').append( view.render().el );
+        </code></pre>
+  </section>
+  <section>
+    <h2>How to dynamically display data?</h2>
+    <blockquote>Not the same old string every time again...</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        var toon = new Person({
+          name: "Toon Ketels",
+          age: 30,
+          job: "Developer",
+          bio: "<p>Scrum master, backend Drupal developer.</p>",
+          uid: 7544,
+          id: 'tk-7544-corl'
+        });
+        
+        var view = new PersonView( {model: toon} );
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        var PersonView = Backbone.View.extend({
+         'className': 'person-view',
+         
+          render: function() {
+            var content = '<h2>'+this.model.get('name')+'</h2>';
+            this.$el.html(content);
+            
+            return this;
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>How to prevent displaying stale data?</h2>
+    <blockquote>The model has changed, the view not.</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        var Personview = Backbone.View.extend({
+          'className': 'person-view',
+          
+          initialize: function() {
+             this.model.on('change', this.render);
+          },
+          
+          render: function() {
+            var content = '<h2>'+this.model.get('name')+'</h2>';
+            this.$el.html(content);
+            
+            return this;
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        this.model.on('change', this.render);
+        </code></pre>
+    <pre class="fragment"><code>
+        this.listenTo(this.model, 'change', this.render);
+        </code></pre>
+  </section>
+  <section>
+    <h2>How to stop using HTML strings in my views' code?</h2>
+    <blockquote>My eyes hurt, it's ugly!</blockquote>
+  </section>
+  <section>
+    <h3>JavaScript templates</h3><code>_.template()</code>
+  </section>
+  <section>
+    <pre><code>
+        <script type="text/template" id="person-view">
+          <h2><%= name %></h2>
+          <p><span class="job"><%= job %></span> | <span class="country"><%= country %></span></p>
+          <div  class="controls"> <span class='more'>More</span><span class='less hide'>Less</span></div>
+          <div class="bio hide"><%= bio %></div>
+        </script>
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        var Personview = Backbone.View.extend({
+          'className': 'person-view',
+          
+          initialize: function() {
+            this.listenTo(this.model, 'change', this.render);
+          },
+          
+          template: _.template( $('#person-view').html() ),
+          
+          render: function() {
+            var content = this.template( this.model.toJSON() );
+            this.$el.html(content);
+            
+            return this;
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <pre><code>
+        template: _.template( $('#person-view').html() ),
+        </code></pre>
+    <pre class="fragment"><code>
+        var content = this.template( this.model.toJSON() );
+        </code></pre>
+  </section>
+  <section>
+    <h2>How about User Interaction?</h2>
+    <blockquote>Views are also about capturing user intent, aren't they?</blockquote>
+  </section>
+  <section><code>events</code></section>
+  <section>
+    <pre><code>
+        var PersonView = Backbone.View.extend({
+        
+          // ...
+          
+          events: {
+            'click .more':        'showMore',
+            'click .less':        'showLess',
+            'click h2':           'goToDetail',
+            'mouseover':          'startHighlight',
+            'mouseout':           'stopHighlight'
+          },
+          
+          showMore: function(event) {
+            // ...
+          },
+          
+          showLess: function(event) {
+            // ...
+          },
+          
+          goToDetail: function(event) {
+            // ...
+          },
+          
+          startHighlight: function(event) {
+            // ...
+          },
+          
+          stopHighlight: function(event) {
+            // ...
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>Keeping state</h2>
+    <blockquote>Person is selected. Selected is a "state", no?</blockquote>
+  </section>
+  <section>
+    <pre><code>
+        var PersonView = Backbone.View.extend({
+        
+          // ...
+          
+          events: {
+            'click h2':           'selectPerson',
+            // ...
+          },
+          
+          selectPerson: function(event) {
+            if (this.model.get('selected')) {
+              this.model.set('selected', false);
+            } else {
+              this.model.set('selected', true);
+            }
+          },
+          
+          // ...
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>Line of events</h2>
+    <blockquote>Going back and forth</blockquote>
+  </section>
+  <section>
+    <ul>
+      <li class="fragment">User clicks `h2` title</li>
+      <li class="fragment">View calls `selectPerson`</li>
+      <li class="fragment">Function will toggle the `selected` attribute of the model</li>
+      <li class="fragment">Model emits `change` event</li>
+      <li class="fragment">Since the view's render function is tied to this event, `render` get's called</li>
+      <li class="fragment">Render takes the model's attributes (some of them were just updated) and displays itself with the updated values.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Same model, different view</h2>
+    <blockquote>What you get when data and representation are separate...</blockquote>
+  </section>
+  <section>
+    <h3>Template</h3>
+    <pre><code>
+        <script type="text/template" id="list-view">
+          <td><%- title %><td>
+          <td><span class="label label-info" <%- selected %> </span></td>
+        </script>
+        </code></pre>
+  </section>
+  <section>
+    <h3>View</h3>
+    <pre><code>
+        var TableRowView = Backbone.View.extend({
+        
+          tagName: 'tr',
+          
+          initialize: function() {
+            this.listenTo(this.model, 'change:selected', this.render);
+            this.listenTo(this.model, 'change:name', this.render);
+          },
+          
+          template: _.template( $('#table-row-view').html() ),
+          
+          render: function() {
+            var content = {
+              selected: this.model.get('selected') ? 'selected' : '',
+              title: this.model.get('name')
+            };
+            this.$el.html( this.template( content ) );
+            
+            return this;
+          },
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h2>3 interesting things</h2>
+    <ol>
+      <li class="fragment">one model, two views</li>
+      <li class="fragment">view updates itself</li>
+      <li class="fragment">a different view updates the model</li>
+    </ol>
+  </section>
+  <section>
+    <h2>Got it?</h2>
+    <ul>
+      <li class="fragment">Create a view</li>
+      <li class="fragment">Set its contents</li>
+      <li class="fragment">Insert it into the DOM</li>
+      <li class="fragment">Pass models so the content is dynamic</li>
+      <li class="fragment">Auto update its display when model changes</li>
+      <li class="fragment">Use templates</li>
+      <li class="fragment">Catch user interaction with "events" property</li>
+    </ul>
+  </section>
+  <section>
+    <h2>How does this help me organize my code?</h2>
+    <ul>
+      <li class="fragment">All user interaction goes via Views, in its events hash</li>
+      <li class="fragment">Separate data (model) from display (view) allows us to have multiple displays</li>
+      <li class="fragment">Templates keep the views code tidy</li>
+      <li class="fragment">By binding to model change event, the view automatically gets updated.</li>
+    </ul>
+  </section>
+  <section>
+    <blockquote>By binding to model change event, a view automatically gets updated.</blockquote>
+    <blockquote class="fragment">A view does not care who updates the model or how.</blockquote>
+    <blockquote class="fragment">One view can update the display of another view via a model, without even knowing it.</blockquote>
+  </section>
+</section>
+<section>
+  <section>
+    <h2>That's it</h2>
+  </section>
+  <section>
+    <h2>Recap</h2>
+    <ul>
+      <li class="fragment">Models</li>
+      <li class="fragment">Collections</li>
+      <li class="fragment">Views</li>
+    </ul>
+  </section>
+</section>
+<section>
+  <section>
+    <h2>One more thing...</h2>
+  </section>
+  <section>
+    <blockquote>By binding to model change event, the view automatically gets updated. The view does not care who updates the model or how.</blockquote>
+  </section>
+  <section>
+    <h2>Same principle applies to collections too</h2>
+  </section>
+  <section> 
+    <blockquote>A view binds to the collections change event to automatically updated itself. </blockquote>
+    <blockquote class="fragment">A view does not care who updates the collection or how.</blockquote>
+    <blockquote class="fragment">One view can update the display of another view via a collection, without even knowing it.</blockquote>
+  </section>
+</section>
+<section>
+  <h2>Now we're really done.</h2>
+</section>
+<section>
+  <h1>Thanks</h1>
+  <h3><a href="http://toonketels.be">Toon Ketels</a> / <a href="http://twitter.com/toonketels">@toonketels</a></h3></h3>
+</section>            </div>
+
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.min.js"></script>
+
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                    // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+                    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>
