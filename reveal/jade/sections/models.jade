@@ -108,6 +108,18 @@ section
     h2 What can we add?
 
   section
+    h3 Model bootstrapping
+    pre.fragment
+      code.
+        var Person = Backbone.Model.extend({
+    
+          initialize: function() {
+            console.log('I run on startup');
+          }
+    
+        });
+
+  section
     h3 Default attributes
     pre.fragment
       code.
@@ -132,7 +144,7 @@ section
             }
           }
       
-        });
+        });   
 
   section
     pre
@@ -146,6 +158,41 @@ section
         toon.set('age', 'none', {validate: true});
 
   section
+    h3 ID
+    pre.fragment
+      code.
+        var Person = Backbone.Model.extend({
+        
+          idAttribute: 'uid'
+      
+        });
+
+  section
+    h3 url
+    pre.fragment
+      code.
+         var Person = Backbone.Model.extend({
+    
+          idAttribute: 'uid',
+
+          urlRoot: 'user'
+      
+        });
+
+
+  section
+    h3 ID and URL allows us...
+    pre.fragment
+      code.
+        var toon = new Person({uid: 1});
+        toon.fetch();
+
+    pre.fragment
+      code.
+        toon.set('age', 31);
+        toon.save();
+
+  section
     h3 Whatever we want
 
   section
@@ -157,6 +204,8 @@ section
       li.fragment Subclass
       li.fragment Defaults
       li.fragment Validate
+      li.fragment ID & url
+      li.fragment fetch & save
 
   section
     h2 How does this help me organize my code?
@@ -164,3 +213,4 @@ section
       li.fragment Separation data/functionality
       li.fragment Tie data related functions related together with the data
       li.fragment No polling, get alerted on changes (events)
+      li.fragment Easy communication with server

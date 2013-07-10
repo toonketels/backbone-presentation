@@ -43,6 +43,11 @@
   </h1>
 </section>
 <section>
+  <h3>About me</h3>
+  <p>Drupal Developer <br /></p>backbone.js - d3.js - grunt.js <br />
+  <img src="/images/wunderkraut-logo.png" height="300px">
+</section>
+<section>
   <h2>Overview</h2>
   <ul>
     <li>What is Backbone</li>
@@ -68,6 +73,46 @@
       <li class="fragment">views</li>
       <li class="fragment">connect to backend over JSON</li>
     </ul>
+  </section>
+  <section>
+    <h3 class="fragment fade-out">A client-side MVC framework</h3>
+    <h3 class="fragment fade-in">A client-side framework</h3>
+  </section>
+  <section>
+    <h3>Others frameworks</h3>
+    <ul>
+      <li>angular.js</li>
+      <li>ember.js</li>
+      <li>spine.js</li>
+      <li>knockout.js</li>
+      <li>sammy.js</li>
+    </ul>
+  </section>
+  <section>
+    <h3 class="fragment fade-out">A client-side framework</h3>
+    <h3 class="fragment fade-in">A client-side library</h3>
+  </section>
+  <section>
+    <h3>Building upon backbone.js</h3>
+    <ul>
+      <li>marionette.js</li>
+      <li>chaplin.js</li>
+      <li>vertebrae.js</li>
+      <li>backbone boilerplate</li>
+      <li>thorax</li>
+    </ul>
+  </section>
+  <section>
+    <h3>dependencies</h3>
+    <ul>
+      <li>underscore.js / lo-dash.js</li>
+      <li>json2.js</li>
+      <li>jQuery / Zepto</li>
+    </ul>
+  </section>
+  <section>
+    <h3>Examples
+    </h3>
   </section>
 </section>
 <section>
@@ -205,6 +250,18 @@
     <h2>What can we add?</h2>
   </section>
   <section>
+    <h3>Model bootstrapping</h3>
+    <pre class="fragment"><code>
+        var Person = Backbone.Model.extend({
+        
+          initialize: function() {
+            console.log('I run on startup');
+          }
+          
+        });
+        </code></pre>
+  </section>
+  <section>
     <h3>Default attributes</h3>
     <pre class="fragment"><code>
         var Person = Backbone.Model.extend({
@@ -228,7 +285,7 @@
             }
           }
           
-        });
+        });   
         </code></pre>
   </section>
   <section>
@@ -239,6 +296,37 @@
         </code></pre>
     <pre class="fragment"><code>
         toon.set('age', 'none', {validate: true});
+        </code></pre>
+  </section>
+  <section>
+    <h3>ID</h3>
+    <pre class="fragment"><code>
+        var Person = Backbone.Model.extend({
+        
+          idAttribute: 'uid'
+          
+        });
+        </code></pre>
+  </section>
+  <section>
+    <h3>url</h3>
+    <pre class="fragment"><code>
+        var Person = Backbone.Model.extend({
+        
+         idAttribute: 'uid',
+         
+         urlRoot: 'user'
+         </code>});</pre>
+  </section>
+  <section>
+    <h3>ID and URL allows us...</h3>
+    <pre class="fragment"><code>
+        var toon = new Person({uid: 1});
+        toon.fetch();
+        </code></pre>
+    <pre class="fragment"><code>
+        toon.set('age', 31);
+        toon.save();
         </code></pre>
   </section>
   <section>
@@ -253,6 +341,8 @@
       <li class="fragment">Subclass</li>
       <li class="fragment">Defaults</li>
       <li class="fragment">Validate</li>
+      <li class="fragment">ID & url</li>
+      <li class="fragment">fetch & save</li>
     </ul>
   </section>
   <section>
@@ -261,6 +351,7 @@
       <li class="fragment">Separation data/functionality</li>
       <li class="fragment">Tie data related functions related together with the data</li>
       <li class="fragment">No polling, get alerted on changes (events)</li>
+      <li class="fragment">Easy communication with server</li>
     </ul>
   </section>
 </section>
