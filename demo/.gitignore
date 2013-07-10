@@ -2,7 +2,7 @@
 # jade/sass. So don't add the 
 # compiled files.
 *.html
-*.css
+www/css/*.css
 
 # We don't want node modules
 /node_modules/

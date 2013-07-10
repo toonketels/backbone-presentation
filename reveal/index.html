@@ -135,7 +135,7 @@
     </ul>
   </section>
   <section>
-    <blockquote>Let's focus on understanding the fundamentals, so we can hack existing apps, know were everything goes and don't curse backbone.js for all the complexity adds, 'cause... it is making our lives easier.</blockquote>
+    <blockquote>Let's focus on understanding the fundamentals, so we can hack existing apps, know were everything goes and don't curse backbone.js for all the complexity it adds, 'cause... it is making our lives easier.</blockquote>
   </section>
   <section>
     <blockquote>Committed and pushed to 8.x</blockquote>
@@ -531,6 +531,22 @@
         </code></pre>
   </section>
   <section>
+    <h3>URL & fetch</h3>
+    <pre class="fragment"><code>
+        var Coworkers = Backbone.Collection.extend({
+        
+          model: Person,
+          
+          url: 'user'
+          
+        });
+        </code></pre>
+    <pre class="fragment"><code>
+        var coworkers = new Coworkers();
+        coworkers.fetch({data: {page: 1}});
+        </code></pre>
+  </section>
+  <section>
     <h2>Got it?</h2>
     <ul>
       <li class="fragment">Create a collection</li>
@@ -538,6 +554,7 @@
       <li class="fragment">Add/remove models</li>
       <li class="fragment">Sort</li>
       <li class="fragment">Emit events</li>
+      <li class="fragment">Fetch entire collection from server</li>
     </ul>
   </section>
   <section>
@@ -545,7 +562,8 @@
     <ul>
       <li class="fragment">Organize sets of models into groups</li>
       <li class="fragment">Tie collection related functions together with the collection</li>
-      <li class="fragment">Emit events and aggregate events of models. We no longer need pointers to all the models.</li>
+      <li class="fragment">Emit events and aggregate events of models. We no longer need pointers to all the models</li>
+      <li class="fragment">Easy communication with server</li>
     </ul>
   </section>
 </section>

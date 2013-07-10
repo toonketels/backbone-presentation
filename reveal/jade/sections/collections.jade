@@ -175,6 +175,23 @@ section
         });
 
   section
+    h3 URL & fetch
+    pre.fragment
+      code.
+        var Coworkers = Backbone.Collection.extend({
+    
+          model: Person,
+
+          url: 'user'
+        
+        });
+
+    pre.fragment
+      code.
+        var coworkers = new Coworkers();
+        coworkers.fetch({data: {page: 1}});
+
+  section
     h2 Got it?
     ul
       li.fragment Create a collection
@@ -182,13 +199,15 @@ section
       li.fragment Add/remove models
       li.fragment Sort
       li.fragment Emit events
+      li.fragment Fetch entire collection from server
 
   section
     h2 How does this help me organize my code?
     ul
       li.fragment Organize sets of models into groups
       li.fragment Tie collection related functions together with the collection
-      li.fragment Emit events and aggregate events of models. We no longer need pointers to all the models.
+      li.fragment Emit events and aggregate events of models. We no longer need pointers to all the models
+      li.fragment Easy communication with server
 
 
 
